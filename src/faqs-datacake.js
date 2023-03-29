@@ -229,7 +229,7 @@ class FAQsDataCake extends HTMLElement {
           .join(' ');
         document.getElementById('searchBox').value = segment;
 
-        if (segment.isFinal) {
+        if (e.detail.isFinal) {
           fetchAnswer(this.bot_id, segment, CHAT_HISTORY);
         }
       });
