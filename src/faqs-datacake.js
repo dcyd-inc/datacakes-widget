@@ -16,10 +16,25 @@ const createStyle = () => {
         }
 
         #datacakes-bot-response {
+            display: block;
+            padding: 5px 32px;
             font-size: 18px;
             font-family: Raleway;
             font-weight: normal;
             font-style: normal;
+            color: #fff;
+            line-height: 1.5;
+        }
+
+        #datacakes-bot-error {
+          display: block;
+          padding: 5px 32px;
+          font-size: 18px;
+          font-family: Raleway;
+          font-weight: normal;
+          font-style: normal;
+          color: #f08989;
+          line-height: 1.5;
         }
 
         #datacakes-bot {
@@ -27,7 +42,7 @@ const createStyle = () => {
             border: 1px solid #ccc;
             border-radius: 3em;
             box-shadow: 0 0 10px #fff;
-            height: 275px;
+            min-height: 275px;
         }
 
         .inputGroup {
@@ -83,8 +98,9 @@ const createStyle = () => {
             padding: 0rem;
         }
 
-        svg {
-            fill: currentColor;
+        #loading {
+          display: none;
+          margin: auto;
         }
 
         #searchBox {
@@ -93,7 +109,9 @@ const createStyle = () => {
             min-width: 16rem;
             max-width: 36rem;
             padding-left: 3rem;
-        }`;
+            font-family: Raleway;
+        }
+        `;
 
   return styleElement;
 };
@@ -109,6 +127,76 @@ const createInputElement = () => {
         </div>
     </div>
     <div>
+      <svg
+      id="loading"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      width="150px"
+      height="150px"
+      viewBox="0 0 100 100"
+      preserveAspectRatio="xMidYMid"
+    >
+      <g transform="translate(20 50)">
+        <circle cx="0" cy="0" r="6" fill="#e15b64">
+          <animateTransform
+            attributeName="transform"
+            type="scale"
+            begin="-0.375s"
+            calcMode="spline"
+            keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+            values="0;1;0"
+            keyTimes="0;0.5;1"
+            dur="1s"
+            repeatCount="indefinite"
+          ></animateTransform>
+        </circle>
+      </g>
+      <g transform="translate(40 50)">
+        <circle cx="0" cy="0" r="6" fill="#f8b26a">
+          <animateTransform
+            attributeName="transform"
+            type="scale"
+            begin="-0.25s"
+            calcMode="spline"
+            keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+            values="0;1;0"
+            keyTimes="0;0.5;1"
+            dur="1s"
+            repeatCount="indefinite"
+          ></animateTransform>
+        </circle>
+      </g>
+      <g transform="translate(60 50)">
+        <circle cx="0" cy="0" r="6" fill="#abbd81">
+          <animateTransform
+            attributeName="transform"
+            type="scale"
+            begin="-0.125s"
+            calcMode="spline"
+            keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+            values="0;1;0"
+            keyTimes="0;0.5;1"
+            dur="1s"
+            repeatCount="indefinite"
+          ></animateTransform>
+        </circle>
+      </g>
+      <g transform="translate(80 50)">
+        <circle cx="0" cy="0" r="6" fill="#81a3bd">
+          <animateTransform
+            attributeName="transform"
+            type="scale"
+            begin="0s"
+            calcMode="spline"
+            keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+            values="0;1;0"
+            keyTimes="0;0.5;1"
+            dur="1s"
+            repeatCount="indefinite"
+          ></animateTransform>
+        </circle>
+      </g>
+    </svg>
       <div>
           <p>
               <span id="datacakes-bot-error"></span>
@@ -157,11 +245,21 @@ class FAQsDataCake extends HTMLElement {
 }
 
 async function fetchAnswer(bot_id, q, chat_history) {
+  const loading = document.getElementById('loading');
+  const successText = document.getElementById('datacakes-bot-response');
+  const errorText = document.getElementById('datacakes-bot-error');
+
+  successText.innerText = '';
+  errorText.innerText = '';
+  loading.style.display = 'block';
+
   const response = await fetch(`https://bots.datacakes.ai/bot/${bot_id}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ q: q, chat_history: chat_history }),
   });
+
+  loading.style.display = 'none';
 
   const json = await response.json();
 
@@ -172,10 +270,9 @@ async function fetchAnswer(bot_id, q, chat_history) {
       chat_history.splice(0, chat_history.length - 10);
     }
 
-    document.getElementById('datacakes-bot-response').innerText =
-      json.data.answer;
+    successText.innerText = json.data.answer;
   } else if (json.status == 'error') {
-    document.getElementById('datacakes-bot-error').innerText = json.message;
+    errorText.innerText = json.message;
   }
 }
 
