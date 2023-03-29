@@ -18,7 +18,7 @@ curl -H "Content-Type: application/json" -X POST 'https://bots.datacakes.ai/crea
 ### production
 Choose a page on your site and add
 ```
-<script type="module" src="https://cdn.jsdelivr.net/gh/dcyd-inc/dcyd-datacakes-widget/dist/faqs-datacake.js"/>
+<script type="module" src="https://cdn.jsdelivr.net/gh/dcyd-inc/datacakes-widget/dist/faqs-datacake.js"/>
 <faqs-datacake id="datacake" botid="MY_BOT_ID"></faqs-datacake>
 ```
 substituting your FAQs Bot ID for `MY_BOT_ID`.
