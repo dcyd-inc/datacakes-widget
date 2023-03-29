@@ -220,8 +220,6 @@ class FAQsDataCake extends HTMLElement {
 
     const CHAT_HISTORY = [];
 
-    const bot_id = document.getElementById('datacake').getAttribute('botid');
-
     document
       .getElementById('microphoneButton')
       .addEventListener('speechsegment', e => {
@@ -232,15 +230,23 @@ class FAQsDataCake extends HTMLElement {
         document.getElementById('searchBox').value = segment;
 
         if (segment.isFinal) {
-          fetchAnswer(bot_id, segment, CHAT_HISTORY);
+          fetchAnswer(this.bot_id, segment, CHAT_HISTORY);
         }
       });
 
     document.getElementById('searchBox').addEventListener('keyup', e => {
       if (e.key === 'Enter') {
-        fetchAnswer(bot_id, e.target.value, CHAT_HISTORY);
+        fetchAnswer(this.bot_id, e.target.value, CHAT_HISTORY);
       }
     });
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    this.bot_id = newValue;
+  }
+
+  static get observedAttributes() {
+    return ['botid'];
   }
 }
 
