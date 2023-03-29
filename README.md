@@ -1,27 +1,17 @@
 
 ## Installation
 
-<details>
-<summary>1. Obtain a FAQs Bot ID</summary>
-Either:
+### 1. Obtain a FAQs Bot ID
 
-If you don't have a FAQs bot, create one [here](https://www.datacakes.ai/autofaqs) or by running 
+If you don't have a FAQs Bot, create one [here](https://www.datacakes.ai/autofaqs) or run the command below, replacing `MY_URL` with your chosen url: 
 ```
-curl -H "Content-Type: application/json" -X POST 'https://bots.datacakes.ai/create-faqs-bot' -d '{"url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0141694"}
+curl -H 'Content-Type: application/json' -X POST 'https://bots.datacakes.ai/create-faqs-bot' -d '{"url": "MY_URL"}'
 ```
-</details>
 
-<details>
-<summary>2. Add custom element to your source code.
-</summary>
+### 2. Add custom element to your source code.
 
-### production
-Choose a page on your site and add
+On your site, add the tags below to your site, replacing `MY_BOT_ID` with your FAQs Bot ID:
 ```
 <script type="module" src="https://cdn.jsdelivr.net/gh/dcyd-inc/datacakes-widget/dist/faqs-datacake.js"/>
 <faqs-datacake id="datacake" botid="MY_BOT_ID"></faqs-datacake>
 ```
-substituting your FAQs Bot ID for `MY_BOT_ID`.
-
-Redeploy your site.
-</details>
