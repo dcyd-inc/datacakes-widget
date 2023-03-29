@@ -1,8 +1,8 @@
-import "https://unpkg.com/@speechly/browser-ui/core/push-to-talk-button.js"
+import '@speechly/browser-ui/core/push-to-talk-button';
 
 const createStyle = () => {
-    const styleElement = document.createElement('style');
-    styleElement.innerHTML = `
+  const styleElement = document.createElement('style');
+  styleElement.innerHTML = `
         @import url('https://fonts.googleapis.com/css2?family=Raleway&family=Roboto:wght@100&display=swap');
 
         main {
@@ -95,12 +95,12 @@ const createStyle = () => {
             padding-left: 3rem;
         }`;
 
-    return styleElement;
+  return styleElement;
 };
 
 const createInputElement = () => {
-const div = document.createElement('main');
-const html =  `<div id="datacakes-bot">
+  const div = document.createElement('main');
+  const html = `<div id="datacakes-bot">
     <div class="inputGroup">
         <div class="inputContainer">
           <input id="searchBox" type="text" placeholder="Search with voice..." autofocus>
@@ -125,52 +125,53 @@ const html =  `<div id="datacakes-bot">
   return div;
 };
 
-
 class FAQsDataCake extends HTMLElement {
-    connectedCallback() {
+  connectedCallback() {
+    this.appendChild(createStyle());
+    this.appendChild(createInputElement());
 
-        this.appendChild(createStyle());
-        this.appendChild(createInputElement());
+    const bot_id = document.getElementById('datacake').getAttribute('botid');
 
-        let bot_id = document.getElementById('datacake').getAttribute('botid');
+    document
+      .getElementById('microphoneButton')
+      .addEventListener('speechsegment', e => {
+        const segment = e.detail.words
+          .filter(w => w.value)
+          .map(w => w.value.toLowerCase())
+          .join(' ');
+        document.getElementById('searchBox').value = segment;
 
-        document.getElementById("microphoneButton").addEventListener("speechsegment", (e) => {
-            const segment = e.detail;
-            document.getElementById("searchBox").value = segment.words.filter(w => w.value).map(
-                w => w.value.toLowerCase()
-            ).join(" ");
+        if (segment.isFinal) {
+          fetchAnswer(bot_id, segment, CHAT_HISTORY);
+        }
+      });
 
-            if (segment.isFinal) {
-                fetchAnswer(bot_id, e.target.value, CHAT_HISTORY);
-            }
-        });
-
-        document.getElementById("searchBox").addEventListener("keyup", (e) => {
-            if (e.key === 'Enter') {
-                fetchAnswer(bot_id, e.target.value, CHAT_HISTORY);
-            }
-        });
-    }
+    document.getElementById('searchBox').addEventListener('keyup', e => {
+      if (e.key === 'Enter') {
+        fetchAnswer(bot_id, e.target.value, CHAT_HISTORY);
+      }
+    });
+  }
 }
 
 let CHAT_HISTORY = [];
-export async function fetchAnswer(bot_id, q, chat_history=[]) {
+export async function fetchAnswer(bot_id, q, chat_history = []) {
+  const response = await fetch(`https://bots.datacakes.ai/bot/${bot_id}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ q: q, chat_history: chat_history }),
+  });
 
-    return fetch("https://bots.datacakes.ai/bot/" + bot_id, {
-        method: 'POST',
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({"q": q, "chat_history": chat_history})
-    })
-    .then(response => response.json())
-    .then(json => {
-        if (json.status == 'ok') {
-            CHAT_HISTORY.push([json.data.question, json.data.answer]);
-            CHAT_HISTORY = CHAT_HISTORY.slice(-10);
-            document.getElementById('datacakes-bot-response').innerText = json.data.answer;
-        } else if (json.status == 'error') {
-            document.getElementById('datacakes-bot-error').innerText = json.message;
-        }
-    });
+  const json = await response.json();
+
+  if (json.status == 'ok') {
+    CHAT_HISTORY.push([json.data.question, json.data.answer]);
+    CHAT_HISTORY = CHAT_HISTORY.slice(-10);
+    document.getElementById('datacakes-bot-response').innerText =
+      json.data.answer;
+  } else if (json.status == 'error') {
+    document.getElementById('datacakes-bot-error').innerText = json.message;
+  }
 }
 
-customElements.define('faqs-datacake',  FAQsDataCake);
+customElements.define('faqs-datacake', FAQsDataCake);
