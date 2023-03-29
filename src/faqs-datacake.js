@@ -130,6 +130,8 @@ class FAQsDataCake extends HTMLElement {
     this.appendChild(createStyle());
     this.appendChild(createInputElement());
 
+    const CHAT_HISTORY = [];
+
     const bot_id = document.getElementById('datacake').getAttribute('botid');
 
     document
@@ -154,8 +156,7 @@ class FAQsDataCake extends HTMLElement {
   }
 }
 
-let CHAT_HISTORY = [];
-export async function fetchAnswer(bot_id, q, chat_history = []) {
+async function fetchAnswer(bot_id, q, chat_history) {
   const response = await fetch(`https://bots.datacakes.ai/bot/${bot_id}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -165,8 +166,12 @@ export async function fetchAnswer(bot_id, q, chat_history = []) {
   const json = await response.json();
 
   if (json.status == 'ok') {
-    CHAT_HISTORY.push([json.data.question, json.data.answer]);
-    CHAT_HISTORY = CHAT_HISTORY.slice(-10);
+    chat_history.push([json.data.question, json.data.answer]);
+
+    if (chat_history.length > 10) {
+      chat_history.splice(0, chat_history.length - 10);
+    }
+
     document.getElementById('datacakes-bot-response').innerText =
       json.data.answer;
   } else if (json.status == 'error') {
