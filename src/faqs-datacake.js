@@ -2,9 +2,7 @@ import '@speechly/browser-ui/core/push-to-talk-button';
 
 const createStyle = () => {
   const styleElement = document.createElement('style');
-  styleElement.innerHTML = `
-        @import url('https://fonts.googleapis.com/css2?family=Raleway&family=Roboto:wght@100&display=swap');
-
+  styleElement.textContent = `
         main {
             display: flex;
             flex-direction: row;
@@ -19,7 +17,7 @@ const createStyle = () => {
             display: block;
             padding: 5px 32px;
             font-size: 18px;
-            font-family: Raleway;
+            font-family: Verdana;
             font-weight: normal;
             font-style: normal;
             color: #fff;
@@ -30,7 +28,7 @@ const createStyle = () => {
           display: block;
           padding: 5px 32px;
           font-size: 18px;
-          font-family: Raleway;
+          font-family: Verdana
           font-weight: normal;
           font-style: normal;
           color: #f08989;
@@ -109,7 +107,7 @@ const createStyle = () => {
             min-width: 16rem;
             max-width: 36rem;
             padding-left: 3rem;
-            font-family: Raleway;
+            font-family: Verdana
         }
         `;
 
@@ -215,26 +213,27 @@ const createInputElement = () => {
 
 class FAQsDataCake extends HTMLElement {
   connectedCallback() {
-    this.appendChild(createStyle());
-    this.appendChild(createInputElement());
+    const shadow = this.attachShadow({ mode: 'open' });
+    shadow.appendChild(createStyle());
+    shadow.appendChild(createInputElement());
 
     const CHAT_HISTORY = [];
 
-    document
+    shadow
       .getElementById('microphoneButton')
       .addEventListener('speechsegment', e => {
         const segment = e.detail.words
           .filter(w => w.value)
           .map(w => w.value.toLowerCase())
           .join(' ');
-        document.getElementById('searchBox').value = segment;
+        shadow.getElementById('searchBox').value = segment;
 
         if (e.detail.isFinal) {
           fetchAnswer(this.bot_id, segment, CHAT_HISTORY);
         }
       });
 
-    document.getElementById('searchBox').addEventListener('keyup', e => {
+    shadow.getElementById('searchBox').addEventListener('keyup', e => {
       if (e.key === 'Enter') {
         fetchAnswer(this.bot_id, e.target.value, CHAT_HISTORY);
       }
@@ -251,9 +250,10 @@ class FAQsDataCake extends HTMLElement {
 }
 
 async function fetchAnswer(bot_id, q, chat_history) {
-  const loading = document.getElementById('loading');
-  const successText = document.getElementById('datacakes-bot-response');
-  const errorText = document.getElementById('datacakes-bot-error');
+  const shadow = document.getElementById('datacake').shadowRoot;
+  const loading = shadow.getElementById('loading');
+  const successText = shadow.getElementById('datacakes-bot-response');
+  const errorText = shadow.getElementById('datacakes-bot-error');
 
   successText.innerText = '';
   errorText.innerText = '';
