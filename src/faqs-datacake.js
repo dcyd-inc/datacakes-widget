@@ -217,7 +217,7 @@ class FAQsDataCake extends HTMLElement {
     shadow.appendChild(createStyle());
     shadow.appendChild(createInputElement());
 
-    const CHAT_HISTORY = [];
+    this.chat_history = [];
 
     shadow
       .getElementById('microphoneButton')
@@ -229,19 +229,20 @@ class FAQsDataCake extends HTMLElement {
         shadow.getElementById('searchBox').value = segment;
 
         if (e.detail.isFinal) {
-          fetchAnswer(this.bot_id, segment, CHAT_HISTORY);
+          fetchAnswer(this.bot_id, segment, this.chat_history);
         }
       });
 
     shadow.getElementById('searchBox').addEventListener('keyup', e => {
       if (e.key === 'Enter') {
-        fetchAnswer(this.bot_id, e.target.value, CHAT_HISTORY);
+        fetchAnswer(this.bot_id, e.target.value, this.chat_history);
       }
     });
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
     this.bot_id = newValue;
+    this.chat_history = [];
   }
 
   static get observedAttributes() {
