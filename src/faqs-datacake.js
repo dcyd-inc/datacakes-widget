@@ -13,7 +13,7 @@ const createStyle = () => {
             padding: 0;
         }
 
-        #datacakes-bot-answer {
+        #bot-answer {
             display: block;
             padding: 5px 32px;
             font-size: 18px;
@@ -24,7 +24,7 @@ const createStyle = () => {
             line-height: 1.5;
         }
 
-        #datacakes-bot-error {
+        #bot-error {
           display: block;
           padding: 5px 32px;
           font-size: 18px;
@@ -35,7 +35,7 @@ const createStyle = () => {
           line-height: 1.5;
         }
 
-        #datacakes-bot {
+        #bot {
             background-color: rgb(30,121,141);
             border: 1px solid #ccc;
             border-radius: 3em;
@@ -101,7 +101,7 @@ const createStyle = () => {
           margin: auto;
         }
 
-        #datacakes-bot-question {
+        #bot-question {
             box-sizing: border-box;
             width: 60vw;
             min-width: 16rem;
@@ -116,10 +116,10 @@ const createStyle = () => {
 
 const createBot = () => {
   const div = document.createElement('main');
-  const html = `<div id="datacakes-bot">
+  const html = `<div id="bot">
     <div class="inputGroup">
         <div class="inputContainer">
-          <input id="datacakes-bot-question" type="text" placeholder="Search with voice..." autofocus>
+          <input id="bot-question" type="text" placeholder="Search with voice..." autofocus>
           <div class="startAdornment">🔍</div>
           <push-to-talk-button id="microphoneButton" size="2.8rem" class="endAdornment" fontsize="0.90rem" backgroundcolor="#104864" intro="Tap or hold for voice search" showtime="30000" appid="f6682864-81dd-4e5c-baf6-b4ef92cd89f5"/>
         </div>
@@ -127,22 +127,22 @@ const createBot = () => {
     <div>
       <div>
           <p>
-              <span id="datacakes-bot-error"></span>
+              <span id="bot-error"></span>
           </p>
       </div>
       <div>
           <p>
-              <span id="datacakes-bot-answer"></span>
+              <span id="bot-answer"></span>
           </p>
       </div>
       <svg
-      id="loader"
-      xmlns="http://www.w3.org/2000/svg"
-      xmlns:xlink="http://www.w3.org/1999/xlink"
-      width="150px"
-      height="150px"
-      viewBox="0 0 100 100"
-      preserveAspectRatio="xMidYMid"
+        id="loader"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        width="150px"
+        height="150px"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="xMidYMid"
       >
         <g transform="translate(20 50)">
           <circle cx="0" cy="0" r="6" fill="#e15b64">
@@ -211,7 +211,7 @@ const createBot = () => {
   return div;
 };
 
-class FAQsBot extends HTMLElement {
+class Bot extends HTMLElement {
   constructor() {
     super();
     this._shadow = this.attachShadow({ mode: 'open' });
@@ -232,14 +232,14 @@ class FAQsBot extends HTMLElement {
           .filter(w => w.value)
           .map(w => w.value.toLowerCase())
           .join(' ');
-        this._shadow.getElementById('datacakes-bot-question').value = segment;
+        this._shadow.getElementById('bot-question').value = segment;
 
         if (e.detail.isFinal) {
           this.handleRequest(segment);
         }
       });
 
-    this._shadow.getElementById('datacakes-bot-question').addEventListener('keyup', e => {
+    this._shadow.getElementById('bot-question').addEventListener('keyup', e => {
       if (e.key === 'Enter') {
         this.handleRequest(e.target.value);
       }
@@ -264,11 +264,11 @@ class FAQsBot extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['botid'];
+    return ['bot-id'];
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'botid') {
+    if (name === 'bot-id') {
       this.question = '';
       this.answer = '';
       this.errorMessage = '';
@@ -291,9 +291,9 @@ class FAQsBot extends HTMLElement {
   }
 
   render() {
-    this._shadow.getElementById('datacakes-bot-question').value = this.question;
-    this._shadow.getElementById('datacakes-bot-answer').innerText = this.answer;
-    this._shadow.getElementById('datacakes-bot-error').innerText = this.errorMessage;
+    this._shadow.getElementById('bot-question').value = this.question;
+    this._shadow.getElementById('bot-answer').innerText = this.answer;
+    this._shadow.getElementById('bot-error').innerText = this.errorMessage;
   }
 }
 
@@ -308,4 +308,4 @@ async function fetchAnswer(bot_id, q, chat_history) {
   return response.json();
 }
 
-customElements.define('faqs-datacake', FAQsBot);
+customElements.define('faqs-datacake', Bot);
