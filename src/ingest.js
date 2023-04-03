@@ -126,7 +126,7 @@ class FileUpload extends HTMLElement {
       const response = await createBot(file);
       this.select('#loader').style.display = 'none';
       this.select('input').value = '';
-      this.dispatch('change', response);
+      this.dispatch('learn', response);
   }
 
   dispatch(event, arg) {
@@ -149,4 +149,4 @@ async function createBot(file) {
   return response.json();
 }
 
-window.customElements.define('datacake-uploader', FileUpload);
+window.customElements.define('datacakes-learn', FileUpload);

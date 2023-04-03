@@ -308,4 +308,4 @@ async function fetchAnswer(bot_id, q, chat_history) {
   return response.json();
 }
 
-customElements.define('faqs-datacake', Bot);
+customElements.define('datacakes-faqs', Bot);
