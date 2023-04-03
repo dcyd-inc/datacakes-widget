@@ -1,12 +1,22 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const fs = require('fs');
+
+const entry = {};
+const components = fs
+  .readdirSync(path.join(__dirname, 'src'))
+  .filter(file => file.endsWith('.js'));
+components.forEach(component => {
+  const name = component.split('.js')[0];
+  entry[name] = `./src/${component}`;
+});
 
 module.exports = {
   mode: 'development',
-  entry: './src/faqs-datacake.js',
+  entry,
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'faqs-datacake.js',
+    filename: '[name].js',
   },
   module: {
     rules: [],
@@ -17,9 +27,4 @@ module.exports = {
       hash: true,
     }),
   ],
-  // devServer: {
-  //   devMiddleware: {
-  //     writeToDisk: true,
-  //   },
-  // },
 };
