@@ -137,6 +137,7 @@ class FileUpload extends HTMLElement {
   }
 }
 
+
 async function createBot(file) {
   var data = new FormData();
   data.append('file', file);
