@@ -13,7 +13,7 @@ const createStyle = () => {
             padding: 0;
         }
 
-        #bot-answer {
+        #answer {
             display: block;
             padding: 5px 32px;
             font-size: 18px;
@@ -24,7 +24,7 @@ const createStyle = () => {
             line-height: 1.5;
         }
 
-        #bot-error {
+        #error {
           display: block;
           padding: 5px 32px;
           font-size: 18px;
@@ -38,20 +38,20 @@ const createStyle = () => {
         #bot {
             background-color: rgb(30,121,141);
             border: 1px solid #ccc;
-            border-radius: 3em;
+            border-radius: 2em;
             box-shadow: 0 0 10px #fff;
-            min-height: 275px;
+            max-width: 36rem;
         }
 
         .inputGroup {
-            margin: 0 0 3rem 0;
+            margin: 0 0 0 0;
         }
 
         input {
             font-size: 1.5rem;
             border: 1px solid #ccc;
             padding: 0.5em;
-            border-radius: 30em;
+            border-radius: 2em;
             background-color: #fff;
         }
 
@@ -101,7 +101,7 @@ const createStyle = () => {
           margin: auto;
         }
 
-        #bot-question {
+        #question {
             box-sizing: border-box;
             width: 60vw;
             min-width: 16rem;
@@ -119,32 +119,31 @@ const createBot = () => {
   const html = `<div id="bot">
     <div class="inputGroup">
         <div class="inputContainer">
-          <input id="bot-question" type="text" placeholder="Search with voice..." autofocus>
+          <input id="question" type="text" placeholder="Search with voice..." autofocus>
           <div class="startAdornment">🔍</div>
           <push-to-talk-button id="microphoneButton" size="2.8rem" class="endAdornment" fontsize="0.90rem" backgroundcolor="#104864" intro="Tap or hold for voice search" showtime="30000" appid="f6682864-81dd-4e5c-baf6-b4ef92cd89f5"/>
         </div>
     </div>
-    <div>
-      <div>
-          <p>
-              <span id="bot-error"></span>
-          </p>
+      <div id="div-error">
+        <p>
+          <span id="error"></span>
+        </p>
       </div>
-      <div>
-          <p>
-              <span id="bot-answer"></span>
-          </p>
+      <div id="div-answer">
+        <p>
+          <span id="answer"></span>
+        </p>
       </div>
       <svg
         id="loader"
         xmlns="http://www.w3.org/2000/svg"
         xmlns:xlink="http://www.w3.org/1999/xlink"
         width="150px"
-        height="150px"
-        viewBox="0 0 100 100"
+        height="45px"
+        viewBox="0 0 100 30"
         preserveAspectRatio="xMidYMid"
       >
-        <g transform="translate(20 50)">
+        <g transform="translate(20 15)">
           <circle cx="0" cy="0" r="6" fill="#e15b64">
             <animateTransform
               attributeName="transform"
@@ -159,7 +158,7 @@ const createBot = () => {
             ></animateTransform>
           </circle>
         </g>
-        <g transform="translate(40 50)">
+        <g transform="translate(40 15)">
           <circle cx="0" cy="0" r="6" fill="#f8b26a">
             <animateTransform
               attributeName="transform"
@@ -174,7 +173,7 @@ const createBot = () => {
             ></animateTransform>
           </circle>
         </g>
-        <g transform="translate(60 50)">
+        <g transform="translate(60 15)">
           <circle cx="0" cy="0" r="6" fill="#abbd81">
             <animateTransform
               attributeName="transform"
@@ -189,7 +188,7 @@ const createBot = () => {
             ></animateTransform>
           </circle>
         </g>
-        <g transform="translate(80 50)">
+        <g transform="translate(80 15)">
           <circle cx="0" cy="0" r="6" fill="#81a3bd">
             <animateTransform
               attributeName="transform"
@@ -205,7 +204,6 @@ const createBot = () => {
           </circle>
         </g>
       </svg>
-    </div>
   </div>`;
   div.innerHTML = html;
   return div;
@@ -221,7 +219,7 @@ class Bot extends HTMLElement {
     this._chatHistory = [];
     this.question = '';
     this.answer = '';
-    this.errorMessage = '';
+    this.error = '';
   }
 
   connectedCallback() {
@@ -232,14 +230,14 @@ class Bot extends HTMLElement {
           .filter(w => w.value)
           .map(w => w.value.toLowerCase())
           .join(' ');
-        this._shadow.getElementById('bot-question').value = segment;
+        this._shadow.getElementById('question').value = segment;
 
         if (e.detail.isFinal) {
           this.handleRequest(segment);
         }
       });
 
-    this._shadow.getElementById('bot-question').addEventListener('keyup', e => {
+    this._shadow.getElementById('question').addEventListener('keyup', e => {
       if (e.key === 'Enter') {
         this.handleRequest(e.target.value);
       }
@@ -253,11 +251,11 @@ class Bot extends HTMLElement {
     if (response.status == 'ok') {
       this.question = response.data.question;
       this.answer = response.data.answer;
-      this.errorMessage = '';
+      this.error = '';
       this.chatHistory = [this.question, this.answer];
     } else if (response.status == 'error') {
       this.answer = '';
-      this.errorMessage = response.message;
+      this.error = response.message;
     }
 
     this.render();
@@ -271,7 +269,7 @@ class Bot extends HTMLElement {
     if (name === 'bot-id') {
       this.question = '';
       this.answer = '';
-      this.errorMessage = '';
+      this.error = '';
       this.botId = newValue;
       this._chatHistory = []; // yes, the private variable.
       this.render();
@@ -291,9 +289,21 @@ class Bot extends HTMLElement {
   }
 
   render() {
-    this._shadow.getElementById('bot-question').value = this.question;
-    this._shadow.getElementById('bot-answer').innerText = this.answer;
-    this._shadow.getElementById('bot-error').innerText = this.errorMessage;
+    this._shadow.getElementById('question').value = this.question;
+
+    if (this.answer.trim().length) {
+      this._shadow.getElementById('div-answer').style.display = 'block';
+      this._shadow.getElementById('answer').innerText = this.answer;
+    } else {
+      this._shadow.getElementById('div-answer').style.display = 'none';
+    }
+
+    if (this.error.trim().length) {
+      this._shadow.getElementById('div-error').style.display = 'block';
+      this._shadow.getElementById('error').innerText = this.error;
+    } else {
+      this._shadow.getElementById('div-error').style.display = 'none';
+    }
   }
 }
 
@@ -308,4 +318,4 @@ async function fetchAnswer(bot_id, q, chat_history) {
   return response.json();
 }
 
-customElements.define('datacakes-faqs', Bot);
+customElements.define('datacakes-bot', Bot);
