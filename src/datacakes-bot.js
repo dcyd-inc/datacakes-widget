@@ -38,7 +38,7 @@ const createStyle = () => {
         #bot {
             background-color: rgb(30,121,141);
             border: 1px solid #ccc;
-            border-radius: 2em;
+            border-radius: 4em;
             box-shadow: 0 0 10px #fff;
             max-width: 36rem;
         }
