@@ -3,113 +3,105 @@ import '@speechly/browser-ui/core/push-to-talk-button';
 const createStyle = () => {
   const styleElement = document.createElement('style');
   styleElement.textContent = `
-        main {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            min-height: 25vh;
-            margin: 0;
-            padding: 0;
-        }
+    main {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+    }
 
-        #answer {
-            display: block;
-            padding: 5px 32px;
-            font-size: 18px;
-            font-family: Verdana;
-            font-weight: normal;
-            font-style: normal;
-            color: #fff;
-            line-height: 1.5;
-        }
+    #bot {
+      border: 1px solid #ccc;
+      box-shadow: 0 0 10px #fff;
+      width: 36rem;
+      background-color: rgb(30,121,141);
+      border-radius: 2rem;
+    }
 
-        #error {
-          display: block;
-          padding: 5px 32px;
-          font-size: 18px;
-          font-family: Verdana
-          font-weight: normal;
-          font-style: normal;
-          color: #f08989;
-          line-height: 1.5;
-        }
+    .questionContainer {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      margin: 0 0 0 0;
+      position: relative;
+    }
 
-        #bot {
-            background-color: rgb(30,121,141);
-            border: 1px solid #ccc;
-            border-radius: 4em;
-            box-shadow: 0 0 10px #fff;
-            max-width: 36rem;
-        }
+    #question {
+      width: 100%;
+      font-family: Verdana;
+      font-size: 1.5rem;
+      border: 1px solid #ccc;
+      padding: 0.5rem 0.5rem 0.5rem 3rem;
+      border-radius: 4em;
+      background-color: #fff;
+    }
 
-        .inputGroup {
-            margin: 0 0 0 0;
-        }
+    #question:focus {
+      outline: none !important;
+      box-shadow: 0 0 10px #fff;
+    }
 
-        input {
-            font-size: 1.5rem;
-            border: 1px solid #ccc;
-            padding: 0.5em;
-            border-radius: 2em;
-            background-color: #fff;
-        }
+    ::placeholder {
+      color: #aaa;
+      opacity: 1;
+    }
 
-        input:focus {
-            outline: none !important;
-            box-shadow: 0 0 10px #fff;
-        }
+    .startAdornment {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      color: #aaa;
+      padding: 0.5rem;
+      font-size: 1.75rem;
+    }
 
-        ::placeholder {
-            color: #aaa;
-            opacity: 1;
-        }
+    .endAdornment {
+      position: absolute;
+      right: 0.3rem;
+      top: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      color: #aaa;
+      padding: 0rem;
+    }
 
-        .inputContainer {
-            position: relative;
-        }
+    #answer {
+      display: block;
+      padding: 5px 32px;
+      font-size: 18px;
+      font-family: Verdana;
+      font-weight: normal;
+      font-style: normal;
+      color: #fff;
+      line-height: 1.5;
+    }
 
-        .startAdornment {
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            color: #aaa;
-            padding: 0.5rem;
-            font-size: 1.75rem;
-        }
+    #error {
+      display: block;
+      padding: 5px 32px;
+      font-size: 18px;
+      font-family: Verdana
+      font-weight: normal;
+      font-style: normal;
+      color: #f08989;
+      line-height: 1.5;
+    }
 
-        .endAdornment {
-            position: absolute;
-            right: 0.3rem;
-            top: 0;
-            bottom: 0;
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            color: #aaa;
-            padding: 0rem;
-        }
-
-        #loader {
-          display: none;
-          margin: auto;
-        }
-
-        #question {
-            box-sizing: border-box;
-            width: 60vw;
-            min-width: 16rem;
-            max-width: 36rem;
-            padding-left: 3rem;
-            font-family: Verdana
-        }
-        `;
+    #loader {
+      display: none;
+      margin: auto;
+    }
+  `;
 
   return styleElement;
 };
@@ -117,93 +109,91 @@ const createStyle = () => {
 const createBot = () => {
   const div = document.createElement('main');
   const html = `<div id="bot">
-    <div class="inputGroup">
-        <div class="inputContainer">
-          <input id="question" type="text" placeholder="Search with voice..." autofocus>
-          <div class="startAdornment">🔍</div>
-          <push-to-talk-button id="microphoneButton" size="2.8rem" class="endAdornment" fontsize="0.90rem" backgroundcolor="#104864" intro="Tap or hold for voice search" showtime="30000" appid="f6682864-81dd-4e5c-baf6-b4ef92cd89f5"/>
-        </div>
+    <div class="questionContainer">
+      <input id="question" type="text" placeholder="Search with voice..." autofocus>
+      <div class="startAdornment">🔍</div>
+      <push-to-talk-button id="microphoneButton" size="2.8rem" class="endAdornment" fontsize="0.90rem" backgroundcolor="#104864" intro="Tap or hold for voice search" showtime="30000" appid="f6682864-81dd-4e5c-baf6-b4ef92cd89f5"/>
     </div>
-      <div id="div-error">
-        <p>
-          <span id="error"></span>
-        </p>
-      </div>
-      <div id="div-answer">
-        <p>
-          <span id="answer"></span>
-        </p>
-      </div>
-      <svg
-        id="loader"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
-        width="150px"
-        height="45px"
-        viewBox="0 0 100 30"
-        preserveAspectRatio="xMidYMid"
-      >
-        <g transform="translate(20 15)">
-          <circle cx="0" cy="0" r="6" fill="#e15b64">
-            <animateTransform
-              attributeName="transform"
-              type="scale"
-              begin="-0.375s"
-              calcMode="spline"
-              keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
-              values="0;1;0"
-              keyTimes="0;0.5;1"
-              dur="1s"
-              repeatCount="indefinite"
-            ></animateTransform>
-          </circle>
-        </g>
-        <g transform="translate(40 15)">
-          <circle cx="0" cy="0" r="6" fill="#f8b26a">
-            <animateTransform
-              attributeName="transform"
-              type="scale"
-              begin="-0.25s"
-              calcMode="spline"
-              keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
-              values="0;1;0"
-              keyTimes="0;0.5;1"
-              dur="1s"
-              repeatCount="indefinite"
-            ></animateTransform>
-          </circle>
-        </g>
-        <g transform="translate(60 15)">
-          <circle cx="0" cy="0" r="6" fill="#abbd81">
-            <animateTransform
-              attributeName="transform"
-              type="scale"
-              begin="-0.125s"
-              calcMode="spline"
-              keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
-              values="0;1;0"
-              keyTimes="0;0.5;1"
-              dur="1s"
-              repeatCount="indefinite"
-            ></animateTransform>
-          </circle>
-        </g>
-        <g transform="translate(80 15)">
-          <circle cx="0" cy="0" r="6" fill="#81a3bd">
-            <animateTransform
-              attributeName="transform"
-              type="scale"
-              begin="0s"
-              calcMode="spline"
-              keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
-              values="0;1;0"
-              keyTimes="0;0.5;1"
-              dur="1s"
-              repeatCount="indefinite"
-            ></animateTransform>
-          </circle>
-        </g>
-      </svg>
+    <div id="div-error">
+      <p>
+        <span id="error"></span>
+      </p>
+    </div>
+    <div id="div-answer">
+      <p>
+        <span id="answer"></span>
+      </p>
+    </div>
+    <svg
+      id="loader"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      width="150px"
+      height="45px"
+      viewBox="0 0 100 30"
+      preserveAspectRatio="xMidYMid"
+    >
+      <g transform="translate(20 15)">
+        <circle cx="0" cy="0" r="6" fill="#e15b64">
+          <animateTransform
+            attributeName="transform"
+            type="scale"
+            begin="-0.375s"
+            calcMode="spline"
+            keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+            values="0;1;0"
+            keyTimes="0;0.5;1"
+            dur="1s"
+            repeatCount="indefinite"
+          ></animateTransform>
+        </circle>
+      </g>
+      <g transform="translate(40 15)">
+        <circle cx="0" cy="0" r="6" fill="#f8b26a">
+          <animateTransform
+            attributeName="transform"
+            type="scale"
+            begin="-0.25s"
+            calcMode="spline"
+            keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+            values="0;1;0"
+            keyTimes="0;0.5;1"
+            dur="1s"
+            repeatCount="indefinite"
+          ></animateTransform>
+        </circle>
+      </g>
+      <g transform="translate(60 15)">
+        <circle cx="0" cy="0" r="6" fill="#abbd81">
+          <animateTransform
+            attributeName="transform"
+            type="scale"
+            begin="-0.125s"
+            calcMode="spline"
+            keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+            values="0;1;0"
+            keyTimes="0;0.5;1"
+            dur="1s"
+            repeatCount="indefinite"
+          ></animateTransform>
+        </circle>
+      </g>
+      <g transform="translate(80 15)">
+        <circle cx="0" cy="0" r="6" fill="#81a3bd">
+          <animateTransform
+            attributeName="transform"
+            type="scale"
+            begin="0s"
+            calcMode="spline"
+            keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+            values="0;1;0"
+            keyTimes="0;0.5;1"
+            dur="1s"
+            repeatCount="indefinite"
+          ></animateTransform>
+        </circle>
+      </g>
+    </svg>
   </div>`;
   div.innerHTML = html;
   return div;
