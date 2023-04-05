@@ -13,6 +13,7 @@ template.innerHTML = /*html*/`
         border-radius: 50%;
         cursor: pointer;
         box-shadow: 0 0 10px #fff;
+        margin: 10px;
       }
 
       label:hover {
