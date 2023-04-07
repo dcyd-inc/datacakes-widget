@@ -14,13 +14,12 @@ const createStyle = () => {
 
     #bot {
       border: 1px solid #ccc;
-      box-shadow: 0 0 10px #fff;
       width: 36rem;
       background-color: rgb(30,121,141);
       border-radius: 2rem;
     }
 
-    .questionContainer {
+    #questionContainer {
       display: flex;
       flex-direction: row;
       width: 100%;
@@ -64,7 +63,7 @@ const createStyle = () => {
 
     .endAdornment {
       position: absolute;
-      right: 0.3rem;
+      right: 0.1rem;
       top: 0;
       bottom: 0;
       display: flex;
@@ -96,6 +95,12 @@ const createStyle = () => {
       color: #f08989;
       line-height: 1.5;
     }
+    .QCzoEc {
+      display: inline-block;
+      margin-top: 3px;
+      color: #9aa0a6;
+      position: relative;
+    }
 
     #loader {
       display: none;
@@ -109,91 +114,95 @@ const createStyle = () => {
 const createBot = () => {
   const div = document.createElement('main');
   const html = `<div id="bot">
-    <div class="questionContainer">
-      <input id="question" type="text" placeholder="Search with voice..." autofocus>
-      <div class="startAdornment">🔍</div>
+    <div id="questionContainer">
+      <input id="question" type="text" placeholder="Ask the bot..." autofocus>
+      <div class="startAdornment">
+      <span class="QCzoEc" style="height:2rem;line-height:20px;width:2rem"><svg focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg></span>
+      </div>
       <push-to-talk-button id="microphoneButton" size="2.8rem" class="endAdornment" fontsize="0.90rem" backgroundcolor="#104864" intro="Tap or hold for voice search" showtime="30000" appid="f6682864-81dd-4e5c-baf6-b4ef92cd89f5"/>
     </div>
-    <div id="div-error">
-      <p>
-        <span id="error"></span>
-      </p>
+    <div id="answerContainer">
+      <div id="div-error">
+        <p>
+          <span id="error"></span>
+        </p>
+      </div>
+      <div id="div-answer">
+        <p>
+          <span id="answer"></span>
+        </p>
+      </div>
+      <svg
+        id="loader"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        width="150px"
+        height="45px"
+        viewBox="0 0 100 30"
+        preserveAspectRatio="xMidYMid"
+      >
+        <g transform="translate(20 15)">
+          <circle cx="0" cy="0" r="6" fill="#e15b64">
+            <animateTransform
+              attributeName="transform"
+              type="scale"
+              begin="-0.375s"
+              calcMode="spline"
+              keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+              values="0;1;0"
+              keyTimes="0;0.5;1"
+              dur="1s"
+              repeatCount="indefinite"
+            ></animateTransform>
+          </circle>
+        </g>
+        <g transform="translate(40 15)">
+          <circle cx="0" cy="0" r="6" fill="#f8b26a">
+            <animateTransform
+              attributeName="transform"
+              type="scale"
+              begin="-0.25s"
+              calcMode="spline"
+              keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+              values="0;1;0"
+              keyTimes="0;0.5;1"
+              dur="1s"
+              repeatCount="indefinite"
+            ></animateTransform>
+          </circle>
+        </g>
+        <g transform="translate(60 15)">
+          <circle cx="0" cy="0" r="6" fill="#abbd81">
+            <animateTransform
+              attributeName="transform"
+              type="scale"
+              begin="-0.125s"
+              calcMode="spline"
+              keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+              values="0;1;0"
+              keyTimes="0;0.5;1"
+              dur="1s"
+              repeatCount="indefinite"
+            ></animateTransform>
+          </circle>
+        </g>
+        <g transform="translate(80 15)">
+          <circle cx="0" cy="0" r="6" fill="#81a3bd">
+            <animateTransform
+              attributeName="transform"
+              type="scale"
+              begin="0s"
+              calcMode="spline"
+              keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+              values="0;1;0"
+              keyTimes="0;0.5;1"
+              dur="1s"
+              repeatCount="indefinite"
+            ></animateTransform>
+          </circle>
+        </g>
+      </svg>
     </div>
-    <div id="div-answer">
-      <p>
-        <span id="answer"></span>
-      </p>
-    </div>
-    <svg
-      id="loader"
-      xmlns="http://www.w3.org/2000/svg"
-      xmlns:xlink="http://www.w3.org/1999/xlink"
-      width="150px"
-      height="45px"
-      viewBox="0 0 100 30"
-      preserveAspectRatio="xMidYMid"
-    >
-      <g transform="translate(20 15)">
-        <circle cx="0" cy="0" r="6" fill="#e15b64">
-          <animateTransform
-            attributeName="transform"
-            type="scale"
-            begin="-0.375s"
-            calcMode="spline"
-            keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
-            values="0;1;0"
-            keyTimes="0;0.5;1"
-            dur="1s"
-            repeatCount="indefinite"
-          ></animateTransform>
-        </circle>
-      </g>
-      <g transform="translate(40 15)">
-        <circle cx="0" cy="0" r="6" fill="#f8b26a">
-          <animateTransform
-            attributeName="transform"
-            type="scale"
-            begin="-0.25s"
-            calcMode="spline"
-            keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
-            values="0;1;0"
-            keyTimes="0;0.5;1"
-            dur="1s"
-            repeatCount="indefinite"
-          ></animateTransform>
-        </circle>
-      </g>
-      <g transform="translate(60 15)">
-        <circle cx="0" cy="0" r="6" fill="#abbd81">
-          <animateTransform
-            attributeName="transform"
-            type="scale"
-            begin="-0.125s"
-            calcMode="spline"
-            keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
-            values="0;1;0"
-            keyTimes="0;0.5;1"
-            dur="1s"
-            repeatCount="indefinite"
-          ></animateTransform>
-        </circle>
-      </g>
-      <g transform="translate(80 15)">
-        <circle cx="0" cy="0" r="6" fill="#81a3bd">
-          <animateTransform
-            attributeName="transform"
-            type="scale"
-            begin="0s"
-            calcMode="spline"
-            keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
-            values="0;1;0"
-            keyTimes="0;0.5;1"
-            dur="1s"
-            repeatCount="indefinite"
-          ></animateTransform>
-        </circle>
-      </g>
-    </svg>
   </div>`;
   div.innerHTML = html;
   return div;
@@ -213,6 +222,18 @@ class Bot extends HTMLElement {
   }
 
   connectedCallback() {
+    this._shadow
+      .getElementById('question')
+      .addEventListener('focus', e => {
+          this._shadow.getElementById('answerContainer').style.display = 'block';
+      });
+
+    this._shadow
+      .getElementById('question')
+      .addEventListener('blur', e => {
+          this._shadow.getElementById('answerContainer').style.display = 'none';
+      });
+
     this._shadow
       .getElementById('microphoneButton')
       .addEventListener('speechsegment', e => {
