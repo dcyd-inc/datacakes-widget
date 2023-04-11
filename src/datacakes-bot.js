@@ -269,12 +269,14 @@ class Bot extends HTMLElement {
         this.handleRequest(e.target.value);
       }
     });
-
-    /*this.botId = this.getAttribute('bot-id');*/
   }
 
   async checkBotExists(botId) {
-    this._botExists = (await checkBotExists(this.botId)).status === 'ok'? true: false;
+    if (botId.trim() === '') {
+      this._botExists = false;
+    } else {
+      this._botExists = (await checkBotExists(this.botId)).status === 'ok'? true: false;
+    }
   }
 
   async handleRequest(q) {
