@@ -86,7 +86,7 @@ class FileUpload extends HTMLElement {
       this.select("input").disabled = false;
 
       console.log('a');
-      this.dispatch('docsloaded', response);
+      this.dispatchEvent(new CustomEvent('docsloaded'));
       console.log('b');
   }
 
