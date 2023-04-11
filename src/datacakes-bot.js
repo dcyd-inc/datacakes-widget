@@ -27,17 +27,17 @@ const createStyle = () => {
       position: relative;
     }
 
-    #question {
+    #input {
       width: 100%;
       font-family: Verdana;
       font-size: 1.5rem;
       border: 1px solid #ccc;
-      padding: 0.5rem 0.5rem 0.5rem 3rem;
+      padding: 0.5rem 3rem 0.5rem 3rem;
       border-radius: 4em;
       background-color: #fff;
     }
 
-    #question:focus {
+    #input:focus {
       outline: none !important;
       box-shadow: 0 0 10px #fff;
     }
@@ -74,6 +74,17 @@ const createStyle = () => {
       padding: 0rem;
     }
 
+    #question {
+      display: block;
+      padding: 5px 32px;
+      font-size: 18px;
+      font-family: Verdana;
+      font-weight: normal;
+      font-style: normal;
+      color: #fff;
+      line-height: 1.5;
+    }
+
     #answer {
       display: block;
       padding: 5px 32px;
@@ -89,10 +100,10 @@ const createStyle = () => {
       display: block;
       padding: 5px 32px;
       font-size: 18px;
-      font-family: Verdana
+      font-family: Verdana;
       font-weight: normal;
       font-style: normal;
-      color: #f08989;
+      color: #eed45d;
       line-height: 1.5;
     }
     .QCzoEc {
@@ -115,7 +126,7 @@ const createBot = () => {
   const div = document.createElement('main');
   const html = `<div id="bot">
     <div id="questionContainer">
-      <input id="question" type="text" placeholder="Ask the bot..." autofocus>
+      <input id="input" type="text" placeholder="Ask the bot..." autofocus>
       <div class="startAdornment">
       <span class="QCzoEc" style="height:2rem;line-height:20px;width:2rem"><svg focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg></span>
       </div>
@@ -125,6 +136,11 @@ const createBot = () => {
       <div id="div-error">
         <p>
           <span id="error"></span>
+        </p>
+      </div>
+      <div id="div-question">
+        <p>
+          <span id="question"></span>
         </p>
       </div>
       <div id="div-answer">
@@ -223,13 +239,13 @@ class Bot extends HTMLElement {
 
   connectedCallback() {
     this._shadow
-      .getElementById('question')
+      .getElementById('input')
       .addEventListener('focus', e => {
           this._shadow.getElementById('answerContainer').style.display = 'block';
       });
 
     this._shadow
-      .getElementById('question')
+      .getElementById('input')
       .addEventListener('blur', e => {
           this._shadow.getElementById('answerContainer').style.display = 'none';
       });
@@ -241,32 +257,44 @@ class Bot extends HTMLElement {
           .filter(w => w.value)
           .map(w => w.value.toLowerCase())
           .join(' ');
-        this._shadow.getElementById('question').value = segment;
+        this._shadow.getElementById('input').value = segment;
 
         if (e.detail.isFinal) {
           this.handleRequest(segment);
         }
       });
 
-    this._shadow.getElementById('question').addEventListener('keyup', e => {
+    this._shadow.getElementById('input').addEventListener('keyup', e => {
       if (e.key === 'Enter') {
         this.handleRequest(e.target.value);
       }
     });
+
+    /*this.botId = this.getAttribute('bot-id');*/
+  }
+
+  async checkBotExists(botId) {
+    this._botExists = (await checkBotExists(this.botId)).status === 'ok'? true: false;
   }
 
   async handleRequest(q) {
-    this._shadow.getElementById('loader').style.display = 'block';
-    const response = await fetchAnswer(this.botId, q, this.chatHistory);
-    this._shadow.getElementById('loader').style.display = 'none';
-    if (response.status == 'ok') {
-      this.question = response.data.question;
-      this.answer = response.data.answer;
-      this.error = '';
-      this.chatHistory = [this.question, this.answer];
-    } else if (response.status == 'error') {
+    if (this._botExists) {
+      this._shadow.getElementById('loader').style.display = 'block';
+      const response = await fetchAnswer(this.botId, q, this.chatHistory);
+      this._shadow.getElementById('loader').style.display = 'none';
+      if (response.status == 'ok') {
+        this.question = response.data.question;
+        this.answer = response.data.answer;
+        this.error = '';
+        this.chatHistory = [this.question, this.answer];
+      } else if (response.status == 'error') {
+        this.answer = '';
+        this.error = response.message;
+      }
+    } else {
+      this.question = '';
       this.answer = '';
-      this.error = response.message;
+      this.error = `Bot ${this.botId} not found.`;
     }
 
     this.render();
@@ -287,6 +315,15 @@ class Bot extends HTMLElement {
     }
   }
 
+  set botId(value) {
+    this._botId = value;
+    this.checkBotExists(this._botId);
+  }
+
+  get botId() {
+      return this._botId;
+  }
+
   set chatHistory(qa) {
     this._chatHistory.push(qa);
 
@@ -300,11 +337,18 @@ class Bot extends HTMLElement {
   }
 
   render() {
-    this._shadow.getElementById('question').value = this.question;
+    this._shadow.getElementById('input').value = '';
+
+    if (this.question.trim().length) {
+      this._shadow.getElementById('div-question').style.display = 'block';
+      this._shadow.getElementById('question').innerText = 'Q: ' + this.question;
+    } else {
+      this._shadow.getElementById('div-question').style.display = 'none';
+    }
 
     if (this.answer.trim().length) {
       this._shadow.getElementById('div-answer').style.display = 'block';
-      this._shadow.getElementById('answer').innerText = this.answer;
+      this._shadow.getElementById('answer').innerText = 'A: ' + this.answer;
     } else {
       this._shadow.getElementById('div-answer').style.display = 'none';
     }
@@ -316,6 +360,15 @@ class Bot extends HTMLElement {
       this._shadow.getElementById('div-error').style.display = 'none';
     }
   }
+}
+
+
+async function checkBotExists(bot_id) {
+  const response = await fetch(`https://bots.datacakes.ai/bot/${bot_id}`, {
+    method: 'GET'
+  });
+
+  return response.json()
 }
 
 
