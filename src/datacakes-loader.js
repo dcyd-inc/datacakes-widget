@@ -64,6 +64,7 @@ template.innerHTML = /*html*/`
 `;
 
 class FileUpload extends HTMLElement {
+  // credit to: https://muhimasri.com/blogs/finally-a-file-upload-component-that-works-everywhere/
   constructor() {
     // Inititialize custom component
     super();
@@ -84,15 +85,13 @@ class FileUpload extends HTMLElement {
       this.select('input').value = '';
       this.select('label').className = 'default';
       this.select("input").disabled = false;
-
-      console.log('a');
-      this.dispatchEvent(new CustomEvent('docsloaded'));
-      console.log('b');
+      this.broadcast('datacakes-docs-loaded', response);
   }
 
-  dispatch(event, arg) {
-    this.dispatchEvent(new CustomEvent(event, {detail: arg}));
+  broadcast(event, arg) {
+    this.dispatchEvent(new CustomEvent(event, {detail: arg, bubbles: true, composed: true}));
   }
+
   get select() {
     return this.shadowRoot.querySelector.bind(this.shadowRoot);
   }
