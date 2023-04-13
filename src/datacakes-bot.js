@@ -4,22 +4,13 @@ const createStyle = () => {
   const styleElement = document.createElement('style');
   styleElement.textContent = `
     main {
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
       align-items: center;
       margin: 0;
-      padding: 0;
+      position: relative;
+      width: 38rem;
     }
 
-    #bot {
-      border: 1px solid #ccc;
-      width: 36rem;
-      background-color: rgb(30,121,141);
-      border-radius: 2rem;
-    }
-
-    #questionContainer {
+    #containerQuestion {
       display: flex;
       flex-direction: row;
       width: 100%;
@@ -33,7 +24,8 @@ const createStyle = () => {
       font-size: 1.5rem;
       border: 1px solid #ccc;
       padding: 0.5rem 3rem 0.5rem 3rem;
-      border-radius: 4em;
+      border-radius: 100px; //sufficiently large so it's circlular
+      box-shadow: 0 0 5px #fff;
       background-color: #fff;
     }
 
@@ -74,9 +66,23 @@ const createStyle = () => {
       padding: 0rem;
     }
 
+    #containerAnswer {
+      display: none;
+      border: 1px solid #ccc;
+      background-color: rgb(30,121,141);
+      border-radius: 2rem;
+      width: 100%;
+      padding: 5px 24px;
+      margin: 5px 0 0 0;
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+      position: absolute;
+      z-index: 10;
+    }
+
     #question {
       display: block;
-      padding: 5px 32px;
       font-size: 18px;
       font-family: Verdana;
       font-weight: normal;
@@ -87,7 +93,6 @@ const createStyle = () => {
 
     #answer {
       display: block;
-      padding: 5px 32px;
       font-size: 18px;
       font-family: Verdana;
       font-weight: normal;
@@ -98,7 +103,6 @@ const createStyle = () => {
 
     #error {
       display: block;
-      padding: 5px 32px;
       font-size: 18px;
       font-family: Verdana;
       font-weight: normal;
@@ -124,15 +128,15 @@ const createStyle = () => {
 
 const createBot = () => {
   const div = document.createElement('main');
-  const html = `<div id="bot">
-    <div id="questionContainer">
+  const html = `
+    <div id="containerQuestion">
       <input id="input" type="text" placeholder="Ask the bot..." autofocus>
       <div class="startAdornment">
       <span class="QCzoEc" style="height:2rem;line-height:20px;width:2rem"><svg focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg></span>
       </div>
       <push-to-talk-button id="microphoneButton" size="2.8rem" class="endAdornment" fontsize="0.90rem" backgroundcolor="#104864" intro="Tap or hold for voice search" showtime="30000" appid="f6682864-81dd-4e5c-baf6-b4ef92cd89f5"/>
     </div>
-    <div id="answerContainer">
+    <div id="containerAnswer">
       <div id="div-error">
         <p>
           <span id="error"></span>
@@ -219,7 +223,7 @@ const createBot = () => {
         </g>
       </svg>
     </div>
-  </div>`;
+  `;
   div.innerHTML = html;
   return div;
 };
@@ -241,13 +245,15 @@ class Bot extends HTMLElement {
     this._shadow
       .getElementById('input')
       .addEventListener('focus', e => {
-          this._shadow.getElementById('answerContainer').style.display = 'block';
+          this.focused = true;
+          this.render();
       });
 
     this._shadow
       .getElementById('input')
       .addEventListener('blur', e => {
-          this._shadow.getElementById('answerContainer').style.display = 'none';
+          this.focused = false;
+          this.render();
       });
 
     this._shadow
@@ -281,19 +287,26 @@ class Bot extends HTMLElement {
 
   async handleRequest(q) {
     if (this._botExists) {
-      this._shadow.getElementById('loader').style.display = 'block';
+      this._loading = true;
+      this.render();
       const response = await fetchAnswer(this.botId, q, this.chatHistory);
-      this._shadow.getElementById('loader').style.display = 'none';
+      this._loading = false;
+      this.render();
+
       if (response.status == 'ok') {
+        this.input = '';
         this.question = response.data.question;
         this.answer = response.data.answer;
         this.error = '';
         this.chatHistory = [this.question, this.answer];
       } else if (response.status == 'error') {
+        this.input = '';
+        this.question = '';
         this.answer = '';
         this.error = response.message;
       }
     } else {
+      this.input = '';
       this.question = '';
       this.answer = '';
       this.error = `Bot ${this.botId} not found.`;
@@ -308,6 +321,7 @@ class Bot extends HTMLElement {
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'bot-id') {
+      this.input = '';
       this.question = '';
       this.answer = '';
       this.error = '';
@@ -339,7 +353,18 @@ class Bot extends HTMLElement {
   }
 
   render() {
-    this._shadow.getElementById('input').value = '';
+    this._shadow.getElementById('loader').style.display = this._loading?'block':'none';
+
+    if (this.input.trim().length == 0) {
+        this._shadow.getElementById('input').value = '';
+    }
+
+    if (this.focused && 
+        (this._loading || this.question.trim().length || this.answer.trim().length || this.error.trim().length)) {
+      this._shadow.getElementById('containerAnswer').style.display = 'block';
+    } else {
+      this._shadow.getElementById('containerAnswer').style.display = 'none';
+    }
 
     if (this.question.trim().length) {
       this._shadow.getElementById('div-question').style.display = 'block';

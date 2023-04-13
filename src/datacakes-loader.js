@@ -11,8 +11,8 @@ template.innerHTML = /*html*/`
     background-image: linear-gradient(270deg, #03e8fd, #d770ab);
     border: 1px solid #ccc;
     border-radius: 50%;
+    box-shadow: 0 0 5px #fff;
     cursor: pointer;
-    box-shadow: 0 0 10px #fff;
     margin: 10px;
   }
 
@@ -22,6 +22,10 @@ template.innerHTML = /*html*/`
 
   #upload-button.default #file-icon {
     animation = none;
+  }
+
+  #upload-button.loading {
+    box-shadow: 0 0 10px #fff;
   }
 
   #upload-button.loading #file-icon {
