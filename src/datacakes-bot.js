@@ -72,6 +72,7 @@ const createStyle = () => {
       background-color: rgb(30,121,141);
       border-radius: 2rem;
       width: 100%;
+      text-align: center;
       padding: 5px 24px;
       margin: 5px 0 0 0;
       -moz-box-sizing: border-box;
