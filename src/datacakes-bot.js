@@ -237,6 +237,7 @@ class Bot extends HTMLElement {
     this._shadow.appendChild(createBot());
 
     this._chatHistory = [];
+    this.input = '';
     this.question = '';
     this.answer = '';
     this.error = '';
@@ -284,8 +285,8 @@ class Bot extends HTMLElement {
       this._botExists = false;
     } else {
       this._botExists = (await checkBotExists(this.botId)).status === 'ok'? true: false;
+      this.broadcast('datacakes-bot-loaded');
     }
-    return true;
   }
 
   async handleRequest() {
@@ -332,7 +333,6 @@ class Bot extends HTMLElement {
       this._chatHistory = []; // yes, the private variable.
       this.botId = newValue;
       this.render();
-      this.broadcast('datacakes-bot-loaded');
     } else if (name === 'question') {
       this.input = newValue;
       this.handleRequest(newValue);
