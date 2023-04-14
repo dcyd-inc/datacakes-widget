@@ -285,16 +285,16 @@ class Bot extends HTMLElement {
     } else {
       this._botExists = (await checkBotExists(this.botId)).status === 'ok'? true: false;
     }
+    return true;
   }
 
   async handleRequest() {
     if (this._botExists) {
-      this._loading = true;
+      this._thinking = true;
       this.render();
       const response = await fetchAnswer(this.botId, this.input, this.chatHistory);
-      this._loading = false;
+      this._thinking = false;
       this._focused = true;
-      this.render();
 
       if (response.status == 'ok') {
 
@@ -325,15 +325,14 @@ class Bot extends HTMLElement {
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'bot-id') {
-      if (oldValue != newValue) {
-        this.botId = newValue;
-        this.input = '';
-        this.question = '';
-        this.answer = '';
-        this.error = '';
-        this._chatHistory = []; // yes, the private variable.
-        this.render();
-      }
+      this.input = '';
+      this.question = '';
+      this.answer = '';
+      this.error = '';
+      this._chatHistory = []; // yes, the private variable.
+      this.botId = newValue;
+      this.render();
+      this.broadcast('datacakes-bot-loaded');
     } else if (name === 'question') {
       this.input = newValue;
       this.handleRequest(newValue);
@@ -343,6 +342,10 @@ class Bot extends HTMLElement {
   set botId(value) {
     this._botId = value;
     this.checkBotExists(this._botId);
+  }
+
+  broadcast(event) {
+    this.dispatchEvent(new CustomEvent(event, {bubbles: true, composed: true}));
   }
 
   get botId() {
@@ -362,12 +365,12 @@ class Bot extends HTMLElement {
   }
 
   render() {
-    this._shadow.getElementById('loader').style.display = this._loading?'block':'none';
+    this._shadow.getElementById('loader').style.display = this._thinking?'block':'none';
 
     this._shadow.getElementById('input').value = this.input;
 
     if (
-        this._loading ||
+        this._thinking ||
         (this._focused &&
             (this.question.trim().length || this.answer.trim().length || this.error.trim().length)
         )

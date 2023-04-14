@@ -1,5 +1,7 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1"/><script defer="defer" src="datacakes-bot.js?9758eb33630523e5bc45"></script><script defer="defer" src="datacakes-loader.js?9758eb33630523e5bc45"></script></head><body style="background-color:#0a1628;"><datacakes-loader></datacakes-loader><div id="divBot" style="display:none"><datacakes-bot bot-id="330f7e4881b2019d"></datacakes-bot></div></body><script>document.addEventListener('datacakes-docs-loaded', (e) => {
-        document.getElementsByTagName('datacakes-bot')[0].setAttribute('bot-id', e.detail.data.bot_id);
+<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1"/><script defer="defer" src="datacakes-bot.js?9443f68d2d32c7f2877d"></script><script defer="defer" src="datacakes-loader.js?9443f68d2d32c7f2877d"></script></head><body style="background-color:#0a1628;"><datacakes-loader></datacakes-loader><div id="divBot" style="display:none"><datacakes-bot id="docs-bot" bot-id="330f7e4881b2019d"></datacakes-bot></div></body><script>document.addEventListener('datacakes-docs-loaded', (e) => {
+        document.getElementById('docs-bot').setAttribute('bot-id', e.detail.data.bot_id);
         document.getElementById('divBot').style.display = 'block';
-        document.getElementsByTagName('datacakes-bot')[0].setAttribute('question', 'Who dis?');
+      });
+      document.addEventListener('datacakes-bot-loaded', (e) => {
+        document.getElementById('docs-bot').setAttribute('question', 'Who dis?');
       });</script></html>
