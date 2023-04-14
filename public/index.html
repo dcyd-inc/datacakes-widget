@@ -13,6 +13,7 @@
       document.addEventListener('datacakes-docs-loaded', (e) => {
         document.getElementsByTagName('datacakes-bot')[0].setAttribute('bot-id', e.detail.data.bot_id);
         document.getElementById('divBot').style.display = 'block';
+        document.getElementsByTagName('datacakes-bot')[0].setAttribute('question', 'Who dis?');
       });
   </script>
 </html>

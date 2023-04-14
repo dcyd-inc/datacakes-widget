@@ -246,34 +246,35 @@ class Bot extends HTMLElement {
     this._shadow
       .getElementById('input')
       .addEventListener('focus', e => {
-          this.focused = true;
+          this._focused = true;
           this.render();
       });
 
     this._shadow
       .getElementById('input')
       .addEventListener('blur', e => {
-          this.focused = false;
+          this._focused = false;
           this.render();
       });
 
     this._shadow
       .getElementById('microphoneButton')
       .addEventListener('speechsegment', e => {
-        const segment = e.detail.words
+        this.input = e.detail.words
           .filter(w => w.value)
           .map(w => w.value.toLowerCase())
-          .join(' ');
-        this._shadow.getElementById('input').value = segment;
+          .join(' ')
+          .trim();
 
         if (e.detail.isFinal) {
-          this.handleRequest(segment);
+          this.handleRequest();
         }
       });
 
     this._shadow.getElementById('input').addEventListener('keyup', e => {
-      if (e.key === 'Enter') {
-        this.handleRequest(e.target.value);
+      this.input = this._shadow.getElementById('input').value.trim();
+      if (e.key === 'Enter' && this.input.length) {
+        this.handleRequest();
       }
     });
   }
@@ -286,15 +287,17 @@ class Bot extends HTMLElement {
     }
   }
 
-  async handleRequest(q) {
+  async handleRequest() {
     if (this._botExists) {
       this._loading = true;
       this.render();
-      const response = await fetchAnswer(this.botId, q, this.chatHistory);
+      const response = await fetchAnswer(this.botId, this.input, this.chatHistory);
       this._loading = false;
+      this._focused = true;
       this.render();
 
       if (response.status == 'ok') {
+
         this.input = '';
         this.question = response.data.question;
         this.answer = response.data.answer;
@@ -317,18 +320,23 @@ class Bot extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['bot-id'];
+    return ['bot-id', 'question'];
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'bot-id') {
-      this.input = '';
-      this.question = '';
-      this.answer = '';
-      this.error = '';
-      this.botId = newValue;
-      this._chatHistory = []; // yes, the private variable.
-      this.render();
+      if (oldValue != newValue) {
+        this.botId = newValue;
+        this.input = '';
+        this.question = '';
+        this.answer = '';
+        this.error = '';
+        this._chatHistory = []; // yes, the private variable.
+        this.render();
+      }
+    } else if (name === 'question') {
+      this.input = newValue;
+      this.handleRequest(newValue);
     }
   }
 
@@ -356,12 +364,14 @@ class Bot extends HTMLElement {
   render() {
     this._shadow.getElementById('loader').style.display = this._loading?'block':'none';
 
-    if (this.input.trim().length == 0) {
-        this._shadow.getElementById('input').value = '';
-    }
+    this._shadow.getElementById('input').value = this.input;
 
-    if (this.focused && 
-        (this._loading || this.question.trim().length || this.answer.trim().length || this.error.trim().length)) {
+    if (
+        this._loading ||
+        (this._focused &&
+            (this.question.trim().length || this.answer.trim().length || this.error.trim().length)
+        )
+    ) {
       this._shadow.getElementById('containerAnswer').style.display = 'block';
     } else {
       this._shadow.getElementById('containerAnswer').style.display = 'none';
