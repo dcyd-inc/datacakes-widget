@@ -104,7 +104,7 @@ class FileUpload extends HTMLElement {
 
 async function createBot(file) {
   var data = new FormData();
-  data.append('file', file);
+  data.append('docs', file);
 
   const response = await fetch('https://bots.datacakes.ai/create-docs-bot', {
     method: 'POST',
