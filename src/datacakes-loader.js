@@ -84,8 +84,7 @@ class FileUpload extends HTMLElement {
   async handleChange(e) {
       this.select('label').className = 'loading';
       this.select("input").disabled = true;
-      const file = e.target.files[0];
-      const response = await createBot(file);
+      const response = await createBot(e.target.files);
       this.select('input').value = '';
       this.select('label').className = 'default';
       this.select("input").disabled = false;
@@ -102,9 +101,12 @@ class FileUpload extends HTMLElement {
 }
 
 
-async function createBot(file) {
+async function createBot(files) {
   var data = new FormData();
-  data.append('docs', file);
+
+  for (const file of files) {
+    data.append('docs[]', file, file.name);
+  }
 
   const response = await fetch('https://bots.datacakes.ai/create-docs-bot', {
     method: 'POST',
