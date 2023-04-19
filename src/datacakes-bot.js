@@ -308,13 +308,13 @@ class Bot extends HTMLElement {
         this.input = '';
         this.question = '';
         this.answer = '';
-        this.error = response.message;
+        this.error = "I'm overwhelmed! Try reloading....";
       }
     } else {
       this.input = '';
       this.question = '';
       this.answer = '';
-      this.error = `Bot ${this.botId} not found.`;
+      this.error = `Bot ${this.botId} was not found.`;
     }
 
     this.render();
