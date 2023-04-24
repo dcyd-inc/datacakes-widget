@@ -7,7 +7,7 @@ const createStyle = () => {
       align-items: center;
       margin: 0;
       position: relative;
-      width: 38rem;
+      max-width: 38rem;
     }
 
     #containerQuestion {
