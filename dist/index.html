@@ -1,6 +1,12 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1"/><script defer="defer" src="datacakes-bot.js?6ec0b518b30d73d130f5"></script><script defer="defer" src="datacakes-loader.js?6ec0b518b30d73d130f5"></script></head><body style="background-color:#0a1628;"><datacakes-loader></datacakes-loader><div id="divBot" style="display:none"><datacakes-bot id="docs-bot" bot-id="330f7e4881b2019d"></datacakes-bot></div></body><script>document.addEventListener('datacakes-docs-loaded', (e) => {
-        document.getElementById('docs-bot').setAttribute('bot-id', e.detail.data.bot_id);
-        document.getElementById('divBot').style.display = 'block';
+<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1"/><script defer="defer" src="datacakes-bot.js?54ecab8c15a60ad6ba3a"></script><script defer="defer" src="datacakes-loader.js?54ecab8c15a60ad6ba3a"></script></head><body style="background-color:#0a1628;"><datacakes-loader></datacakes-loader><div id="divBot" style="display:none"><datacakes-bot id="docs-bot" bot-id="330f7e4881b2019d"></datacakes-bot></div></body><script>document.addEventListener('datacakes-loader-response', (e) => {
+        console.log(e.detail);
+        if (e.detail.status == 'ok') {
+          document.getElementById('docs-bot').setAttribute('bot-id', e.detail.data.bot_id);
+          document.getElementById('divBot').style.display = 'block';
+        } else {
+          document.getElementById('divBot').style.display = 'none';
+          document.getElementById('docs-bot').setAttribute('bot-id', null);
+        }
       });
       document.addEventListener('datacakes-bot-loaded', (e) => {
         document.getElementById('docs-bot').setAttribute('question', 'Who dis?');
