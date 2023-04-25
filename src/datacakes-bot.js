@@ -353,11 +353,9 @@ class Bot extends HTMLElement {
   }
 
   set chatHistory(qa) {
+    const max_length = 10
     this._chatHistory.push(qa);
-
-    if (this._chatHistory.length > 10) {
-      this._chatHistory.splice(0, this._chatHistory.length - 10);
-    }
+    this._chatHistory.splice(0, this._chatHistory.length - max_length);
   }
 
   get chatHistory() {
