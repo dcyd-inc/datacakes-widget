@@ -241,6 +241,7 @@ class Bot extends HTMLElement {
     this.question = '';
     this.answer = '';
     this.error = '';
+    this.baseURL = 'https://bots.datacakes.ai';
   }
 
   connectedCallback() {
@@ -284,7 +285,7 @@ class Bot extends HTMLElement {
     if (botId.trim() === '') {
       this._botExists = false;
     } else {
-      this._botExists = (await checkBotExists(this.botId)).status === 'ok'? true: false;
+      this._botExists = (await checkBotExists(this.baseURL, botId)).status === 'ok'? true: false;
       this.broadcast('datacakes-bot-loaded');
     }
   }
@@ -293,7 +294,7 @@ class Bot extends HTMLElement {
     if (this._botExists) {
       this._thinking = true;
       this.render();
-      const response = await fetchAnswer(this.botId, this.input, this.chatHistory);
+      const response = await fetchAnswer(this.baseURL, this.botId, this.input, this.chatHistory);
       this._thinking = false;
       this._focused = true;
 
@@ -341,6 +342,8 @@ class Bot extends HTMLElement {
 
   set botId(value) {
     this._botId = value;
+    // Need to send this._botId, not this.botId, since
+    // the latter is updated only _after_ this function returns.
     this.checkBotExists(this._botId);
   }
 
@@ -353,7 +356,7 @@ class Bot extends HTMLElement {
   }
 
   set chatHistory(qa) {
-    const max_length = 10
+    const max_length = 10;
     this._chatHistory.push(qa);
     this._chatHistory.splice(0, this._chatHistory.length - max_length);
   }
@@ -402,8 +405,8 @@ class Bot extends HTMLElement {
 }
 
 
-async function checkBotExists(bot_id) {
-  const response = await fetch(`https://bots.datacakes.ai/bot/${bot_id}`, {
+async function checkBotExists(base_url, bot_id) {
+  const response = await fetch(`${base_url}/bot/${bot_id}`, {
     method: 'GET'
   });
 
@@ -411,8 +414,8 @@ async function checkBotExists(bot_id) {
 }
 
 
-async function fetchAnswer(bot_id, q, chat_history) {
-  const response = await fetch(`https://bots.datacakes.ai/bot/${bot_id}`, {
+async function fetchAnswer(base_url, bot_id, q, chat_history) {
+  const response = await fetch(`${base_url}/bot/${bot_id}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ q: q, chat_history: chat_history }),
