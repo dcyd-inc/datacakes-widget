@@ -24,7 +24,7 @@ const createStyle = () => {
       font-size: 1.5rem;
       border: 1px solid #ccc;
       padding: 0.5rem 3rem 0.5rem 3rem;
-      border-radius: 100px; //sufficiently large so it's circlular
+      border-radius: 100px; /*sufficiently large so it's circlular*/
       box-shadow: 0 0 5px #fff;
       background-color: #fff;
     }
@@ -73,7 +73,7 @@ const createStyle = () => {
       border-radius: 2rem;
       width: 100%;
       text-align: left;
-      padding: 5px 24px;
+      padding: 10px 24px;
       margin: 5px 0 0 0;
       -moz-box-sizing: border-box;
       -webkit-box-sizing: border-box;
@@ -82,8 +82,26 @@ const createStyle = () => {
       z-index: 10;
     }
 
+    #div-question {
+      padding: 5px 0px;
+    }
+
     #question {
       display: block;
+      font-size: 18px;
+      font-family: Verdana;
+      font-weight: normal;
+      font-style: normal;
+      color: #ccc;
+      line-height: 1.5;
+    }
+
+    #div-answer {
+      display: flex;
+      padding: 5px 0px;
+    }
+
+    #answer {
       font-size: 18px;
       font-family: Verdana;
       font-weight: normal;
@@ -92,14 +110,20 @@ const createStyle = () => {
       line-height: 1.5;
     }
 
-    #answer {
-      display: block;
-      font-size: 18px;
-      font-family: Verdana;
-      font-weight: normal;
-      font-style: normal;
-      color: #fff;
-      line-height: 1.5;
+    #answer-flag {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: rotate(90deg);
+      height: 25px;
+      width: 25px;
+      color: #ccc;
+      border-radius: 100px; /* large enough */
+      border: 1px solid #ccc;
+      font-size:20px;
+      font-weight: bold;
+      font-style: italic; /* so the mouth is right*/
+      cursor: pointer;
     }
 
     #error {
@@ -118,10 +142,11 @@ const createStyle = () => {
       position: relative;
     }
 
-    #loader {
-      display: none;
-      margin: auto;
+    #div-loader {
+      text-align: center;
+      padding: 5px 0px;
     }
+
   `;
 
   return styleElement;
@@ -139,90 +164,88 @@ const createBot = () => {
     </div>
     <div id="containerAnswer">
       <div id="div-error">
-        <p>
-          <span id="error"></span>
-        </p>
+        <span id="error"></span>
       </div>
       <div id="div-question">
-        <p>
-          <span id="question"></span>
-        </p>
+        <span id="question"></span>
       </div>
       <div id="div-answer">
-        <p>
-          <span id="answer"></span>
-        </p>
+        <div><span id="answer"></span></div>
+        <div>
+          <div id="answer-flag"><span>=\\</span></div>
+        </div>
       </div>
-      <svg
-        id="loader"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
-        width="150px"
-        height="45px"
-        viewBox="0 0 100 30"
-        preserveAspectRatio="xMidYMid"
-      >
-        <g transform="translate(20 15)">
-          <circle cx="0" cy="0" r="6" fill="#e15b64">
-            <animateTransform
-              attributeName="transform"
-              type="scale"
-              begin="-0.375s"
-              calcMode="spline"
-              keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
-              values="0;1;0"
-              keyTimes="0;0.5;1"
-              dur="1s"
-              repeatCount="indefinite"
-            ></animateTransform>
-          </circle>
-        </g>
-        <g transform="translate(40 15)">
-          <circle cx="0" cy="0" r="6" fill="#f8b26a">
-            <animateTransform
-              attributeName="transform"
-              type="scale"
-              begin="-0.25s"
-              calcMode="spline"
-              keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
-              values="0;1;0"
-              keyTimes="0;0.5;1"
-              dur="1s"
-              repeatCount="indefinite"
-            ></animateTransform>
-          </circle>
-        </g>
-        <g transform="translate(60 15)">
-          <circle cx="0" cy="0" r="6" fill="#abbd81">
-            <animateTransform
-              attributeName="transform"
-              type="scale"
-              begin="-0.125s"
-              calcMode="spline"
-              keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
-              values="0;1;0"
-              keyTimes="0;0.5;1"
-              dur="1s"
-              repeatCount="indefinite"
-            ></animateTransform>
-          </circle>
-        </g>
-        <g transform="translate(80 15)">
-          <circle cx="0" cy="0" r="6" fill="#81a3bd">
-            <animateTransform
-              attributeName="transform"
-              type="scale"
-              begin="0s"
-              calcMode="spline"
-              keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
-              values="0;1;0"
-              keyTimes="0;0.5;1"
-              dur="1s"
-              repeatCount="indefinite"
-            ></animateTransform>
-          </circle>
-        </g>
-      </svg>
+      <div id="div-loader">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          width="150px"
+          height="45px"
+          viewBox="0 0 100 30"
+          preserveAspectRatio="xMidYMid"
+        >
+          <g transform="translate(20 15)">
+            <circle cx="0" cy="0" r="6" fill="#e15b64">
+              <animateTransform
+                attributeName="transform"
+                type="scale"
+                begin="-0.375s"
+                calcMode="spline"
+                keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+                values="0;1;0"
+                keyTimes="0;0.5;1"
+                dur="1s"
+                repeatCount="indefinite"
+              ></animateTransform>
+            </circle>
+          </g>
+          <g transform="translate(40 15)">
+            <circle cx="0" cy="0" r="6" fill="#f8b26a">
+              <animateTransform
+                attributeName="transform"
+                type="scale"
+                begin="-0.25s"
+                calcMode="spline"
+                keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+                values="0;1;0"
+                keyTimes="0;0.5;1"
+                dur="1s"
+                repeatCount="indefinite"
+              ></animateTransform>
+            </circle>
+          </g>
+          <g transform="translate(60 15)">
+            <circle cx="0" cy="0" r="6" fill="#abbd81">
+              <animateTransform
+                attributeName="transform"
+                type="scale"
+                begin="-0.125s"
+                calcMode="spline"
+                keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+                values="0;1;0"
+                keyTimes="0;0.5;1"
+                dur="1s"
+                repeatCount="indefinite"
+              ></animateTransform>
+            </circle>
+          </g>
+          <g transform="translate(80 15)">
+            <circle cx="0" cy="0" r="6" fill="#81a3bd">
+              <animateTransform
+                attributeName="transform"
+                type="scale"
+                begin="0s"
+                calcMode="spline"
+                keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+                values="0;1;0"
+                keyTimes="0;0.5;1"
+                dur="1s"
+                repeatCount="indefinite"
+              ></animateTransform>
+            </circle>
+          </g>
+        </svg>
+      </div>
     </div>
   `;
   div.innerHTML = html;
@@ -241,7 +264,10 @@ class Bot extends HTMLElement {
     this.question = '';
     this.answer = '';
     this.error = '';
+    this.query_id = null;
     this.baseURL = 'https://bots.datacakes.ai';
+    this.baseURL = 'http://127.0.0.1:5000';
+    this._flagged = false;
   }
 
   connectedCallback() {
@@ -257,6 +283,12 @@ class Bot extends HTMLElement {
       .addEventListener('blur', e => {
           this._focused = false;
           this.render();
+      });
+
+    this._shadow
+      .getElementById('answer-flag')
+      .addEventListener('click', e => {
+          this.handleClickFlag();
       });
 
     this._shadow
@@ -290,6 +322,12 @@ class Bot extends HTMLElement {
     }
   }
 
+  async handleClickFlag() {
+      this._flagged = true;
+      this.render();
+      const response = await flagAnswer(this.baseURL, this.botId, this.queryId);
+  }
+
   async handleRequest() {
     if (this._botExists) {
       this._thinking = true;
@@ -303,12 +341,14 @@ class Bot extends HTMLElement {
         this.input = '';
         this.question = response.data.question;
         this.answer = response.data.answer;
+        this.queryId = response.query_id;
         this.error = '';
         this.chatHistory = [this.question, this.answer];
       } else if (response.status == 'error') {
         this.input = '';
         this.question = '';
         this.answer = '';
+        this.queryId = null;
         this.error = "I'm overwhelmed! Try reloading....";
       }
     } else {
@@ -316,7 +356,9 @@ class Bot extends HTMLElement {
       this.question = '';
       this.answer = '';
       this.error = `Bot ${this.botId} was not found.`;
+      this.queryId = null;
     }
+    this._flagged = false;
 
     this.render();
   }
@@ -366,9 +408,15 @@ class Bot extends HTMLElement {
   }
 
   render() {
-    this._shadow.getElementById('loader').style.display = this._thinking?'block':'none';
+    this._shadow.getElementById('div-loader').style.display = this._thinking?'block':'none';
 
     this._shadow.getElementById('input').value = this.input;
+
+    if (this._flagged) {
+        this._shadow.getElementById('answer-flag').style.cursor = 'default';
+    } else {
+        this._shadow.getElementById('answer-flag').style.cursor = 'pointer';
+    }
 
     if (
         this._thinking ||
@@ -378,7 +426,7 @@ class Bot extends HTMLElement {
     ) {
       this._shadow.getElementById('containerAnswer').style.display = 'block';
     } else {
-      this._shadow.getElementById('containerAnswer').style.display = 'none';
+      //this._shadow.getElementById('containerAnswer').style.display = 'none';
     }
 
     if (this.question.trim().length) {
@@ -389,7 +437,7 @@ class Bot extends HTMLElement {
     }
 
     if (this.answer.trim().length) {
-      this._shadow.getElementById('div-answer').style.display = 'block';
+      this._shadow.getElementById('div-answer').style.display = 'flex';
       this._shadow.getElementById('answer').innerText = 'A: ' + this.answer;
     } else {
       this._shadow.getElementById('div-answer').style.display = 'none';
@@ -419,6 +467,16 @@ async function fetchAnswer(base_url, bot_id, q, chat_history) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ q: q, chat_history: chat_history }),
+  });
+
+  return response.json();
+}
+
+async function flagAnswer(base_url, bot_id, query_id) {
+  const response = await fetch(`${base_url}/bot/${bot_id}/flag`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query_id: query_id }),
   });
 
   return response.json();
