@@ -109,6 +109,10 @@ const createStyle = () => {
       color: #fff;
       line-height: 1.5;
     }
+    
+    #answer-tools {
+      margin-left: auto;
+    }
 
     #answer-flag {
       display: flex;
@@ -117,13 +121,17 @@ const createStyle = () => {
       transform: rotate(90deg);
       height: 25px;
       width: 25px;
-      color: #ccc;
+      color: #fff;
       border-radius: 100px; /* large enough */
       border: 1px solid #ccc;
-      font-size:20px;
-      font-weight: bold;
+      font-size:18px;
+      font-weight: normal;
       font-style: italic; /* so the mouth is right*/
       cursor: pointer;
+    }
+
+    #answer-flag:hover {
+      background-color: #FA9137;
     }
 
     #error {
@@ -171,7 +179,7 @@ const createBot = () => {
       </div>
       <div id="div-answer">
         <div><span id="answer"></span></div>
-        <div>
+        <div id="answer-tools">
           <div id="answer-flag"><span>=\\</span></div>
         </div>
       </div>
@@ -414,8 +422,12 @@ class Bot extends HTMLElement {
 
     if (this._flagged) {
         this._shadow.getElementById('answer-flag').style.cursor = 'default';
+        this._shadow.getElementById('answer-flag').style.background = '#FA9137';
+        this._shadow.getElementById('answer-flag').style.opacity = .5;
     } else {
         this._shadow.getElementById('answer-flag').style.cursor = 'pointer';
+        this._shadow.getElementById('answer-flag').style.background = '';
+        this._shadow.getElementById('answer-flag').style.opacity = 1;
     }
 
     if (
