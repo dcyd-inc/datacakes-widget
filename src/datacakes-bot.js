@@ -92,7 +92,7 @@ const createStyle = () => {
       font-family: Verdana;
       font-weight: normal;
       font-style: normal;
-      color: #ccc;
+      color: #bbb;
       line-height: 1.5;
     }
 
@@ -121,7 +121,7 @@ const createStyle = () => {
       transform: rotate(90deg);
       height: 25px;
       width: 25px;
-      color: #fff;
+      color: #ccc;
       border-radius: 100px; /* large enough */
       border: 1px solid #ccc;
       font-size:18px;
