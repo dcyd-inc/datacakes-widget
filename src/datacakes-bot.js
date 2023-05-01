@@ -4,8 +4,7 @@ const createStyle = () => {
   const styleElement = document.createElement('style');
   styleElement.textContent = `
     main {
-      align-items: center;
-      margin: 0;
+      margin: 0 auto;
       position: relative;
       max-width: 38rem;
     }
@@ -149,6 +148,24 @@ const createStyle = () => {
       color: #9aa0a6;
       position: relative;
     }
+    
+    #div-collapser {
+      cursor: pointer
+    }
+
+    #collapser {
+      margin: 0 auto;
+      display: block;
+      width: 20px;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 10px;
+      stroke-linejoin: round;
+    }
+
+    #div-collapser:hover #collapser {
+      fill: #fff;
+    }
 
     #div-loader {
       text-align: center;
@@ -254,6 +271,7 @@ const createBot = () => {
           </g>
         </svg>
       </div>
+      <div id="div-collapser"><svg xmlns="http://www.w3.org/2000/svg" id="collapser" viewBox="0 0 320 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"/></svg></div>
     </div>
   `;
   div.innerHTML = html;
@@ -276,21 +294,22 @@ class Bot extends HTMLElement {
     this.baseURL = 'https://bots.datacakes.ai';
     //this.baseURL = 'http://127.0.0.1:5000';
     this._flagged = false;
+    this._collapsed = true;
   }
 
   connectedCallback() {
     this._shadow
       .getElementById('input')
       .addEventListener('focus', e => {
-          this._focused = true;
-          this.render();
+        this._collapsed = false;
+        this.render();
       });
 
     this._shadow
-      .getElementById('input')
-      .addEventListener('blur', e => {
-          this._focused = false;
-          this.render();
+      .getElementById('div-collapser')
+      .addEventListener('click', e => {
+        this._collapsed = true;
+        this.render();
       });
 
     this._shadow
@@ -342,7 +361,7 @@ class Bot extends HTMLElement {
       this.render();
       const response = await fetchAnswer(this.baseURL, this.botId, this.input, this.chatHistory);
       this._thinking = false;
-      this._focused = true;
+      this._collapsed = false;
 
       if (response.status == 'ok') {
 
@@ -432,13 +451,19 @@ class Bot extends HTMLElement {
 
     if (
         this._thinking ||
-        (this._focused &&
+        (!this._collapsed &&
             (this.question.trim().length || this.answer.trim().length || this.error.trim().length)
         )
     ) {
       this._shadow.getElementById('containerAnswer').style.display = 'block';
     } else {
-      //this._shadow.getElementById('containerAnswer').style.display = 'none';
+      this._shadow.getElementById('containerAnswer').style.display = 'none';
+    }
+
+    if (this._thinking) {
+      this._shadow.getElementById('div-collapser').style.display = 'none';
+    } else {
+      this._shadow.getElementById('div-collapser').style.display = 'block';
     }
 
     if (this.question.trim().length) {
