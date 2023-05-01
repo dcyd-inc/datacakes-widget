@@ -6,7 +6,7 @@ const createStyle = () => {
     main {
       margin: 0 auto;
       position: relative;
-      max-width: 38rem;
+      max-width: 550px;
     }
 
     #containerQuestion {
