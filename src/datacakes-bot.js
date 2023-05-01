@@ -197,7 +197,7 @@ const createBot = () => {
       <div id="div-answer">
         <div><span id="answer"></span></div>
         <div id="answer-tools">
-          <div id="answer-flag"><span>=\\</span></div>
+          <div id="answer-flag"><span>=(</span></div>
         </div>
       </div>
       <div id="div-loader">
