@@ -1,4 +1,6 @@
 import '@speechly/browser-ui/core/push-to-talk-button';
+import Chart from 'chart.js/auto';
+
 
 const createStyle = () => {
   const styleElement = document.createElement('style');
@@ -100,13 +102,19 @@ const createStyle = () => {
       padding: 5px 0px;
     }
 
-    #answer {
+    #answer-text {
       font-size: 18px;
       font-family: Verdana;
       font-weight: normal;
       font-style: normal;
       color: #fff;
       line-height: 1.5;
+    }
+
+    #answer-chart {
+      width: 100%;
+      background-color: #fff;
+      margin: 10px auto;
     }
     
     #answer-tools {
@@ -195,7 +203,12 @@ const createBot = () => {
         <span id="question"></span>
       </div>
       <div id="div-answer">
-        <div><span id="answer"></span></div>
+        <div id=div-answer-content">
+          <div id="answer-text"></div>
+          <div>
+            <canvas id="answer-chart"></canvas>
+          </div>
+        </div>
         <div id="answer-tools">
           <div id="answer-flag"><span>=(</span></div>
         </div>
@@ -288,12 +301,13 @@ class Bot extends HTMLElement {
     this._chatHistory = [];
     this.input = '';
     this.question = '';
-    this.answer = '';
+    this.answerText = '';
     this.error = '';
     this.query_id = null;
     this.baseURL = 'https://bots.datacakes.ai';
     this._flagged = false;
     this._collapsed = true;
+    this._chart = null;
   }
 
   connectedCallback() {
@@ -365,22 +379,26 @@ class Bot extends HTMLElement {
       if (response.status == 'ok') {
 
         this.input = '';
-        this.question = response.data.question;
-        this.answer = response.data.answer;
+        this.question = response.data.question.trim();
+        this.answerText = response.data.answer.trim();
         this.queryId = response.query_id;
+        this.answerData = {
+          "labels": ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+          "numbers": [15, 19, 3, 5, 2, 3]
+        };
         this.error = '';
-        this.chatHistory = [this.question, this.answer];
+        this.chatHistory = [this.question, this.answerText];
       } else if (response.status == 'error') {
         this.input = '';
         this.question = '';
-        this.answer = '';
+        this.answerText = '';
         this.queryId = null;
         this.error = "I'm overwhelmed! Try reloading....";
       }
     } else {
       this.input = '';
       this.question = '';
-      this.answer = '';
+      this.answerText = '';
       this.error = `Bot ${this.botId} was not found.`;
       this.queryId = null;
     }
@@ -397,7 +415,7 @@ class Bot extends HTMLElement {
     if (name === 'bot-id') {
       this.input = '';
       this.question = '';
-      this.answer = '';
+      this.answerText = '';
       this.error = '';
       this._chatHistory = []; // yes, the private variable.
       this.botId = newValue;
@@ -451,7 +469,10 @@ class Bot extends HTMLElement {
     if (
         this._thinking ||
         (!this._collapsed &&
-            (this.question.trim().length || this.answer.trim().length || this.error.trim().length)
+            (this.question.length
+                || this.answerText.length
+                || this.answerData
+                || this.error.length)
         )
     ) {
       this._shadow.getElementById('containerAnswer').style.display = 'block';
@@ -472,19 +493,52 @@ class Bot extends HTMLElement {
       this._shadow.getElementById('div-question').style.display = 'none';
     }
 
-    if (this.answer.trim().length) {
+    if (this.answerText.length || this.answerData) {
       this._shadow.getElementById('div-answer').style.display = 'flex';
-      this._shadow.getElementById('answer').innerText = 'A: ' + this.answer;
+      if (this.answerText.length) {
+        this._shadow.getElementById('answer-text').innerText = 'A: ' + this.answerText;
+      }
+      if (this.answerData) {
+        this.renderChart(this.answerData);
+      }
+        
     } else {
       this._shadow.getElementById('div-answer').style.display = 'none';
     }
 
-    if (this.error.trim().length) {
+    if (this.error.length) {
       this._shadow.getElementById('div-error').style.display = 'block';
       this._shadow.getElementById('error').innerText = this.error;
     } else {
       this._shadow.getElementById('div-error').style.display = 'none';
     }
+  }
+
+  renderChart(data) {
+    if (this._chart != null) {
+      this._chart.destroy();
+    }
+
+    const ctx = this._shadow.getElementById('answer-chart').getContext('2d');
+
+    this._chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+        datasets: [{
+          label: '# of Votes',
+          data: [15, 19, 3, 5, 2, 3], 
+          borderWidth: 1
+        }]  
+      },  
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }   
+        }   
+      }   
+    }); 
   }
 }
 
