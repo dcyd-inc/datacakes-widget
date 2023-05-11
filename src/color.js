@@ -1,4 +1,4 @@
-import 'https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js';
+import Chart from 'chart.js/auto';
 
 class ChartElem extends HTMLElement {
 	constructor() {
