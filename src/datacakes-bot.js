@@ -115,6 +115,9 @@ const createStyle = () => {
       width: 100%;
       background-color: #fff;
       margin: 10px auto;
+      display: none;
+      padding: 5px;
+      border-radius: 5px;
     }
     
     #answer-tools {
@@ -133,12 +136,14 @@ const createStyle = () => {
       border: 1px solid #ccc;
       font-size:18px;
       font-weight: normal;
-      font-style: italic; /* so the mouth is right*/
+      font-style: italic; /* so the mouth is crooked */
       cursor: pointer;
     }
 
     #answer-flag:hover {
       background-color: #FA9137;
+      border: #FA9137;
+      color: rgb(30,121,141);
     }
 
     #error {
@@ -205,9 +210,7 @@ const createBot = () => {
       <div id="div-answer">
         <div id=div-answer-content">
           <div id="answer-text"></div>
-          <div>
-            <canvas id="answer-chart"></canvas>
-          </div>
+          <canvas id="answer-chart"></canvas>
         </div>
         <div id="answer-tools">
           <div id="answer-flag"><span>=(</span></div>
@@ -363,9 +366,11 @@ class Bot extends HTMLElement {
   }
 
   async handleClickFlag() {
+    if (this._flagged == false) {
       this._flagged = true;
       this.render();
       const response = await flagAnswer(this.baseURL, this.botId, this.queryId);
+    }
   }
 
   async handleRequest() {
@@ -382,10 +387,7 @@ class Bot extends HTMLElement {
         this.question = response.data.question.trim();
         this.answerText = response.data.answer.trim();
         this.queryId = response.query_id;
-        this.answerData = {
-          "labels": ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-          "numbers": [15, 19, 3, 5, 2, 3]
-        };
+        this.answerData = response.data.data;
         this.error = '';
         this.chatHistory = [this.question, this.answerText];
       } else if (response.status == 'error') {
@@ -459,10 +461,13 @@ class Bot extends HTMLElement {
     if (this._flagged) {
         this._shadow.getElementById('answer-flag').style.cursor = 'default';
         this._shadow.getElementById('answer-flag').style.background = '#FA9137';
+        this._shadow.getElementById('answer-flag').style.border = '#FA9137';
         this._shadow.getElementById('answer-flag').style.opacity = .5;
+        this._shadow.getElementById('answer-flag').style.color = 'rgb(30,121,141)';
     } else {
         this._shadow.getElementById('answer-flag').style.cursor = 'pointer';
         this._shadow.getElementById('answer-flag').style.background = '';
+        this._shadow.getElementById('answer-flag').style.border = '';
         this._shadow.getElementById('answer-flag').style.opacity = 1;
     }
 
@@ -499,8 +504,17 @@ class Bot extends HTMLElement {
         this._shadow.getElementById('answer-text').innerText = 'A: ' + this.answerText;
       }
       if (this.answerData) {
-        this.renderChart(this.answerData);
+        if (this._chart != null) {
+          this._chart.destroy();
+        }
+        const canvas = this._shadow.getElementById('answer-chart');
+        canvas.style.display = 'block';
+
+        this._chart = drawChart(canvas.getContext('2d'), this.answerData);
+      } else {
+        this._shadow.getElementById('answer-chart').style.display = 'none';
       }
+
         
     } else {
       this._shadow.getElementById('div-answer').style.display = 'none';
@@ -513,33 +527,29 @@ class Bot extends HTMLElement {
       this._shadow.getElementById('div-error').style.display = 'none';
     }
   }
+}
 
-  renderChart(data) {
-    if (this._chart != null) {
-      this._chart.destroy();
-    }
 
-    const ctx = this._shadow.getElementById('answer-chart').getContext('2d');
-
-    this._chart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-        datasets: [{
-          label: '# of Votes',
-          data: [15, 19, 3, 5, 2, 3], 
-          borderWidth: 1
-        }]  
-      },  
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
-          }   
+function drawChart(ctx, data) {
+  return new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: data["x"],
+      datasets: [{
+        label: data["y_label"],
+        data: data["y"],
+        backgroundColor: 'rgb(30,121,141)',
+        borderWidth: 1
+      }]  
+    },  
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
         }   
       }   
-    }); 
-  }
+    }   
+  }); 
 }
 
 
