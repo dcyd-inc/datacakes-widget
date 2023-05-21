@@ -109,7 +109,7 @@ async function createBot(files) {
   }
 
   try {
-    const response = await fetch('https://bots.datacakes.ai/create-docs-bot', {
+    const response = await fetch('https://bots1.datacakes.ai/create-docs-bot', {
       method: 'POST',
       body: data
     });
